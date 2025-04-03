@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solitaire</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+        }
+        #renderDiv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="renderDiv"></div>
+    <script>
+
+ // Define ASSETS at the top of your file, outside of any class or function
+const ASSETS = [{
+    "name": "card_back",
+    "shortid": "U0e1",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/card_back.png?5TIm"
+}, {
+    "name": "13_spade",
+    "shortid": "VYWj",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/13_spade.png?sgbt"
+}, {
+    "name": "12_spade",
+    "shortid": "Dp9m",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/12_spade.png?sxp9"
+}, {
+    "name": "11_spade",
+    "shortid": "JDva",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/11_spade.png?YG9l"
+}, {
+    "name": "10_spade",
+    "shortid": "AGZ2",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/10_spade.png?kX0R"
+}, {
+    "name": "9_spade",
+    "shortid": "fFGQ",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/9_spade.png?aEpA"
+}, {
+    "name": "8_spade",
+    "shortid": "OV1w",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/8_spade.png?zJ7s"
+}, {
+    "name": "7_spade",
+    "shortid": "QX4Y",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/7_spade.png?7MhB"
+}, {
+    "name": "6_spade",
+    "shortid": "Fr6B",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/6_spade.png?J8Ba"
+}, {
+    "name": "5_spade",
+    "shortid": "iLCy",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/5_spade.png?a0XW"
+}, {
+    "name": "4_spade",
+    "shortid": "KWov",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/4_spade.png?U8ja"
+}, {
+    "name": "3_spade",
+    "shortid": "RXyP",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/3_spade.png?N8iF"
+}, {
+    "name": "2_spade",
+    "shortid": "H5fI",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/2_spade.png?LcMi"
+}, {
+    "name": "1_spade",
+    "shortid": "osIp",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/1_spade.png?lreh"
+
+
+}, {
+    "name": "13_club",
+    "shortid": "tLWA",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/13_club.png?Ov7J"
+}, {
+    "name": "12_club",
+    "shortid": "stBX",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/12_club.png?dyXA"
+}, {
+    "name": "11_club",
+    "shortid": "NN8u",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/11_club.png?uOtm"
+}, {
+    "name": "10_club",
+    "shortid": "a1YF",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/10_club.png?cGbh"
+}, {
+    "name": "9_club",
+    "shortid": "pnem",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/9_club.png?OV0C"
+}, {
+    "name": "8_club",
+    "shortid": "2tZQ",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/8_club.png?kX5e"
+}, {
+    "name": "7_club",
+    "shortid": "hjaT",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/7_club.png?RTR3"
+}, {
+    "name": "6_club",
+    "shortid": "rofg",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/6_club.png?sf4P"
+}, {
+    "name": "5_club",
+    "shortid": "fPHR",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/5_club.png?1pi4"
+}, {
+    "name": "4_club",
+    "shortid": "QG9j",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/4_club.png?O26b"
+}, {
+    "name": "3_club",
+    "shortid": "3Ttx",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/3_club.png?3JUi"
+}, {
+    "name": "2_club",
+    "shortid": "k0yl",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/2_club.png?WMsz"
+}, {
+    "name": "1_club",
+    "shortid": "kzhK",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/1_club.png?9cSh"
+
+
+
+}, {
+    "name": "13_heart",
+    "shortid": "87In",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/13_heart.png?KxvL"
+}, {
+    "name": "12_heart",
+    "shortid": "GWr1",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/12_heart.png?KyzR"
+}, {
+    "name": "11_heart",
+    "shortid": "HPqq",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/11_heart.png?Amys"
+}, {  
+    "name": "10_heart",
+    "shortid": "hwoL",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/10_heart.png?Ry36"
+}, {
+    "name": "9_heart",
+    "shortid": "5V1q",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/9_heart.png?ERwu"
+}, {
+    "name": "8_heart",
+    "shortid": "cFah",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/8_heart.png?aV8V"
+}, {
+    "name": "7_heart",
+    "shortid": "ePMq",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/7_heart.png?Y1Gg"
+}, {
+    "name": "6_heart",
+    "shortid": "MpKt",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/6_heart.png?MHyh"
+}, {
+    "name": "5_heart",
+    "shortid": "UWpt",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/5_heart.png?TrmI"
+}, {
+    "name": "4_heart",
+    "shortid": "LQ7n",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/4_heart.png?Ix52"
+}, {
+    "name": "3_heart",
+    "shortid": "OGks",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/3_heart.png?tAUq"
+}, {
+    "name": "2_heart",
+    "shortid": "kgKr",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/2_heart.png?48Ns"
+}, {
+    "name": "1_heart",
+    "shortid": "6YFW",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/1_heart.png?b2Wp"
+}, {
+    "name": "13_diamond",
+    "shortid": "XahR",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/13_diamond.png?ruWm"
+}, {
+    "name": "4_diamond",
+    "shortid": "p6Kt",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/4_diamond.png?FLAT"
+}, {
+    "name": "7_diamond",
+    "shortid": "u6KU",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/7_diamond.png?NzqQ"
+}, {
+    "name": "6_diamond",
+    "shortid": "TYGP",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/6_diamond.png?s4FU"
+}, {
+    "name": "10_diamond",
+    "shortid": "gV5G",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/10_diamond.png?AlBK"
+}, {
+    "name": "12_diamond",
+    "shortid": "rp28",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/12_diamond.png?yTTo"
+}, {
+    "name": "11_diamond",
+    "shortid": "56ED",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/11_diamond.png?APXm"
+}, {
+    "name": "5_diamond",
+    "shortid": "ledh",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/5_diamond.png?PjeE"
+}, {
+    "name": "9_diamond",
+    "shortid": "Tf80",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/9_diamond.png?E5Ic"
+}, {
+    "name": "8_diamond",
+    "shortid": "MueQ",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/8_diamond.png?MGF6"
+
+}, {
+    "name": "1_diamond",
+    "shortid": "MoFw",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/1_diamond.png?Aosw"
+}, {
+    "name": "2_diamond",
+    "shortid": "kT9e",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/2_diamond.png?NIFF"
+}, {
+    "name": "3_diamond",
+    "shortid": "kRd1",
+    "file_type": "png",
+    "url": "https://play.rosebud.ai/assets/3_diamond.png?4fjq"
+}];
+
+class Solitaire extends Phaser.Scene {
+    constructor() {
+        super({key: 'GameScene'});
+        this.dragStartTime = 0;
+        this.cardSpacing = 0.2; // Reduce spacing to fit more cards
+        this.maxStackSize = 20; // Define maximum stack size
+        this.initialDeck = []; // Store the initial deck configuration
+    }
+
+    preload() {
+        this.load.image('card_back', 'https://play.rosebud.ai/assets/card_back.png?5TIm');
+        this.load.image('foundation_spade', 'https://play.rosebud.ai/assets/foundation_spade.png?1y16');
+        this.load.image('foundation_club', 'https://play.rosebud.ai/assets/foundation_club.png?auUm');
+        this.load.image('foundation_heart', 'https://play.rosebud.ai/assets/foundation_heart.png?BX1z');
+        this.load.image('foundation_diamond', 'https://play.rosebud.ai/assets/foundation_diamond.png?JSY7');
+        this.load.image('empty_tableau', 'https://play.rosebud.ai/assets/empty_tableau.png?jQA7');
+        const suits = ['spade', 'club', 'heart', 'diamond'];
+        const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
+        const loadedAssets = new Set();
+        for (let suit of suits) {
+            for (let value of values) {
+                const key = `${value}_${suit}`;
+                if (!loadedAssets.has(key)) {
+                    const asset = ASSETS.find(asset => asset.name === key);
+                    if (asset) {
+                        this.load.image(key, `https://play.rosebud.ai/assets/${key}.png?${asset.shortid}`);
+                        loadedAssets.add(key);
+                    } else {
+                        console.warn(`Asset not found for ${key}`);
+                    }
+                }
+            }
+        }
+
+        console.log(`Loaded ${loadedAssets.size} unique card assets`);
+        this.load.audio('background_music', `https://play.rosebud.ai/assets/2D_playground_template_music.mp3?maQ8`);
+    }
+
+    create() {
+        // Add a green background for the card table
+        this.add.rectangle(400, 300, 800, 600, 0x008fff);
+        this.cardWidth = 80;
+        this.cardHeight = 120;
+        this.deck = this.createInitialDeck();
+        this.initialDeck = [...this.deck]; // Save the initial deck configuration
+        // Set up the initial Solitaire layout
+        this.setupSolitaireLayout();
+        // Add background music
+        this.backgroundMusic = this.sound.add('background_music', {
+            loop: true,
+            volume: 0.2
+        });
+        this.backgroundMusic.play();
+
+        // Set up game interactions
+        this.setupGameInteractions();
+
+        // Create the new game button
+        this.createNewGameButton();
+
+        // Create the auto-complete button
+        this.createAutoCompleteButton();
+
+        // Set up resize event
+        this.scale.on('resize', this.resize, this);
+        this.resize(this.scale.gameSize, null, null, null);
+    }
+
+    createDeck() {
+        const deck = [];
+        const suits = ['spade', 'club', 'heart', 'diamond'];
+        const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
+        const usedKeys = new Set();
+
+        for (let suit of suits) {
+            for (let value of values) {
+                const key = `${value}_${suit}`;
+                if (!usedKeys.has(key)) {
+                    deck.push({
+                        suit,
+                        value,
+                        key
+                    });
+                    usedKeys.add(key);
+                }
+            }
+        }
+
+        console.log(`Created deck with ${deck.length} unique cards`);
+        return deck;
+    }
+    shuffleDeck(deck) {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+    setupSolitaireLayout() {
+        console.log('Setting up Solitaire layout');
+        console.log('Deck size:', this.deck.length);
+        this.tableauPiles = [];
+        this.foundationPiles = [];
+        // Create 7 tableau piles
+        const tableauSpacing = this.cardWidth + 20;
+        for (let i = 0; i < 7; i++) {
+            let pile = [];
+            const x = 20 + i * tableauSpacing;
+            const y = 200;
+            // Add empty tableau placeholder
+            const emptyTableau = this.add.image(x, y, 'empty_tableau');
+            emptyTableau.setOrigin(0, 0);
+            emptyTableau.setDisplaySize(this.cardWidth, this.cardHeight);
+            emptyTableau.setDepth(0); // Always keep it at the bottom
+            emptyTableau.tableauIndex = i;
+
+            for (let j = 0; j <= i; j++) {
+                if (this.deck.length > 0) {
+                    const card = this.deck.pop();
+                    const cardY = y + j * 30;
+                    const cardSprite = this.add.image(x, cardY, card.key);
+                    cardSprite.setOrigin(0, 0);
+                    cardSprite.setDisplaySize(this.cardWidth, this.cardHeight);
+                    cardSprite.setDepth(1); // Set a higher depth so cards appear above empty tableau
+                    cardSprite.data = card;
+                    cardSprite.faceUp = j === i;
+                    if (!cardSprite.faceUp) {
+                        cardSprite.setTexture('card_back');
+                    } else {
+                        this.setupCardInteractivity(cardSprite);
+                    }
+                    pile.push(cardSprite);
+                } else {
+                    console.warn('Ran out of cards while setting up tableau piles');
+                    break;
+                }
+            }
+            this.tableauPiles.push(pile);
+            if (this.deck.length === 0) break;
+        }
+        // Create the foundation piles
+        const suits = ['spade', 'club', 'heart', 'diamond'];
+        const foundationSpacing = this.cardWidth + 20;
+        for (let i = 0; i < 4; i++) {
+            const x = 20 + i * foundationSpacing;
+            const y = 50;
+            const foundationPile = this.add.image(x, y, `foundation_${suits[i]}`);
+            foundationPile.setOrigin(0, 0);
+            foundationPile.setDisplaySize(this.cardWidth, this.cardHeight);
+            foundationPile.setInteractive();
+            foundationPile.suit = suits[i];
+            this.foundationPiles.push([foundationPile]);
+        }
+        // Create the stock pile
+        this.stockPile = this.add.image(20 + 4 * foundationSpacing, 50, 'card_back');
+        this.stockPile.setOrigin(0, 0);
+        this.stockPile.setDisplaySize(this.cardWidth, this.cardHeight);
+        this.stockPile.setInteractive();
+        this.stockPile.on('pointerdown', this.drawCard, this);
+        // Create the waste pile (initially empty)
+        this.wastePile = [];
+        this.wastePilePosition = {
+            x: 20 + 5 * foundationSpacing,
+            y: 50
+        };
+        console.log('Solitaire layout setup complete');
+        console.log('Remaining cards in deck:', this.deck.length);
+    }
+
+    handleCardClick(pointer, gameObject) {
+        if (!gameObject || !gameObject.data) {
+            console.log('Invalid card object');
+            return;
+        }
+        console.log('handleCardClick', gameObject.data.key);
+        if (!gameObject.faceUp) {
+            console.log('Card is not face up, ignoring click');
+            return;
+        }
+        this.children.bringToTop(gameObject);
+        gameObject.sourcePile = this.wastePile.includes(gameObject) ? this.wastePile :
+            this.findCardPile(gameObject) || this.findFoundationPile(gameObject);
+        if (gameObject.sourcePile) {
+            const index = gameObject.sourcePile.indexOf(gameObject);
+            gameObject.cardStack = gameObject.sourcePile.slice(index).filter(card => card.faceUp);
+        } else {
+            console.warn('Card not found in any pile:', gameObject.data.key);
+            gameObject.cardStack = [gameObject];
+        }
+        console.log('Click started:', gameObject.data.key, 'from', gameObject.sourcePile === this.wastePile ? 'waste pile' : 'tableau/foundation');
+        // Try to move to foundation first
+        let moved = false;
+        for (let foundationPile of this.foundationPiles) {
+            if (this.checkValidFoundationMove(gameObject, foundationPile)) {
+                this.moveCardToFoundation(gameObject, foundationPile);
+                moved = true;
+                break;
+            }
+        }
+        // If not moved to foundation, try tableau piles
+        if (!moved) {
+            for (let tableauPile of this.tableauPiles) {
+                let topCard = this.getTopmostFaceUpCard(tableauPile);
+                if (topCard && this.checkValidMove(gameObject, topCard)) {
+                    this.moveCardStack(gameObject, tableauPile);
+                    moved = true;
+                    break;
+                } else if (!topCard && gameObject.data.value === '13') {
+                    // Kings can be placed on empty piles
+                    this.moveCardStack(gameObject, tableauPile);
+                    moved = true;
+                    break;
+                }
+            }
+        }
+        if (moved) {
+            console.log('Card moved successfully');
+            // Remove the cards from the source pile
+            if (gameObject.sourcePile) {
+                const index = gameObject.sourcePile.indexOf(gameObject);
+                if (index > -1) {
+                    gameObject.sourcePile.splice(index, gameObject.cardStack.length);
+                    // Flip the card below if it's not face up and not in a foundation pile
+                    if (index > 0 && !gameObject.sourcePile[index - 1].faceUp && !this.foundationPiles.includes(gameObject.sourcePile)) {
+                        this.flipCard(gameObject.sourcePile[index - 1]);
+                    }
+                }
+            }
+            // Remove the card from the waste pile if it was there
+            const wasteIndex = this.wastePile.indexOf(gameObject);
+            if (wasteIndex > -1) {
+                this.wastePile.splice(wasteIndex, 1);
+            }
+            // Update visibility of empty tableau placeholders
+            this.updateEmptyTableauVisibility();
+        } else {
+            console.log('No valid move found for clicked card');
+        }
+        delete gameObject.cardStack;
+        delete gameObject.sourcePile;
+
+        // Log the current state of the waste pile
+        console.log('Waste pile after move:', this.wastePile.map(card => card.data.key));
+    }
+
+    handleDragStart(pointer, gameObject) {
+        console.log('handleDragStart');
+        this.dragStartTime = new Date().getTime();
+        if (!gameObject || !gameObject.data) {
+            console.log('Invalid card object');
+            return;
+        }
+        if (!gameObject.faceUp) {
+            console.log('not face up');
+            return;
+        }
+        console.log('face up');
+        this.children.bringToTop(gameObject);
+        gameObject.sourcePile = this.wastePile.includes(gameObject) ? this.wastePile :
+            this.findCardPile(gameObject) || this.findFoundationPile(gameObject);
+        if (gameObject.sourcePile) {
+            const index = gameObject.sourcePile.indexOf(gameObject);
+            gameObject.cardStack = gameObject.sourcePile.slice(index).filter(card => card.faceUp);
+            let stackHeight = (gameObject.cardStack.length - 1) * (this.cardHeight * this.cardSpacing) + this.cardHeight;
+            // Adjust stack height for large stacks
+            if (gameObject.cardStack.length > this.maxStackSize) {
+                const overflow = gameObject.cardStack.length - this.maxStackSize;
+                stackHeight -= overflow * (this.cardHeight * this.cardSpacing) * 0.5; // Reduce by half of the overflow
+            }
+            gameObject.cardStack.forEach((card, i) => {
+                this.children.bringToTop(card);
+                let cardY = gameObject.y + i * (this.cardHeight * this.cardSpacing);
+                if (gameObject.cardStack.length > this.maxStackSize) {
+                    const overflow = gameObject.cardStack.length - this.maxStackSize;
+                    cardY -= overflow * (this.cardHeight * this.cardSpacing) * (i / gameObject.cardStack.length);
+                }
+                card.setPosition(gameObject.x, cardY);
+                card.stackIndex = i;
+            });
+            // Set draggable area for the stack
+            gameObject.setInteractive({
+                draggable: true,
+                hitArea: new Phaser.Geom.Rectangle(0, 0, this.cardWidth, stackHeight),
+                hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+                useHandCursor: true
+            });
+        } else {
+            console.warn('Card not found in any pile:', gameObject.data.key);
+            gameObject.cardStack = [gameObject];
+        }
+        console.log('Drag started:', gameObject.data.key, 'from', gameObject.sourcePile === this.wastePile ? 'waste pile' : 'tableau/foundation');
+    }
+
+    handleDrag(pointer, gameObject, dragX, dragY) {
+        if (gameObject.cardStack) {
+            gameObject.cardStack.forEach((card, i) => {
+                card.x = dragX;
+                card.y = dragY + i * (this.cardHeight * this.cardSpacing);
+            });
+        } else {
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+        }
+    }
+
+    handleDragEnd(pointer, gameObject) {
+        console.log('handleDragEnd');
+        const dragEndTime = new Date().getTime();
+        const dragDuration = dragEndTime - this.dragStartTime;
+
+        // Calculate drag distance
+        const dragStartX = gameObject.input.dragStartX;
+        const dragStartY = gameObject.input.dragStartY;
+        const dragEndX = gameObject.x;
+        const dragEndY = gameObject.y;
+        const dragDistance = Phaser.Math.Distance.Between(dragStartX, dragStartY, dragEndX, dragEndY);
+
+        const dragThreshold = 10; // Adjust this value as needed
+
+        if (dragDuration < 200 && dragDistance < dragThreshold) {
+            console.log('Short drag detected, handling as click');
+            this.handleCardClick(pointer, gameObject);
+            return;
+        }
+
+        let dropped = false;
+        let targetPile;
+        // Find the closest pile
+        let closestPile = this.findClosestPile(gameObject);
+        console.log(closestPile)
+        if (closestPile) {
+            if (this.foundationPiles.includes(closestPile)) {
+                if (this.checkValidFoundationMove(gameObject, closestPile)) {
+                    this.moveCardToFoundation(gameObject, closestPile);
+                    dropped = true;
+                    targetPile = closestPile;
+                }
+            } else {
+                let topCard = this.getTopmostFaceUpCard(closestPile);
+                if (topCard) {
+                    if (this.checkValidMove(gameObject, topCard)) {
+                        this.moveCardStack(gameObject, closestPile);
+                        dropped = true;
+                        targetPile = closestPile;
+                    }
+                } else if (gameObject.data.value === '13') { // Kings can be placed on empty piles
+                    this.moveCardStack(gameObject, closestPile);
+                    dropped = true;
+                    targetPile = closestPile;
+                }
+            }
+        }
+        if (dropped) {
+            console.log('Card dropped successfully');
+            // Remove the cards from the source pile
+            if (gameObject.sourcePile) {
+                const index = gameObject.sourcePile.indexOf(gameObject);
+                if (index > -1) {
+                    gameObject.sourcePile.splice(index, gameObject.cardStack.length);
+                    // Flip the card below if it's not face up and not in a foundation pile
+                    if (index > 0 && !gameObject.sourcePile[index - 1].faceUp && !this.foundationPiles.includes(gameObject.sourcePile)) {
+                        this.flipCard(gameObject.sourcePile[index - 1]);
+                    }
+                }
+            }
+            // Remove the card from the waste pile if it was there
+            const wasteIndex = this.wastePile.indexOf(gameObject);
+            if (wasteIndex > -1) {
+                this.wastePile.splice(wasteIndex, 1);
+            }
+            this.checkWinCondition(); // Check for win after successful drop
+        } else {
+            console.log('Card not dropped, returning to original position');
+            // Return the cards to their original positions
+            this.returnCardStack(gameObject);
+        }
+        delete gameObject.cardStack;
+        delete gameObject.sourcePile;
+        // Update visibility of empty tableau placeholders
+        this.updateEmptyTableauVisibility();
+        // Log the current state of the waste pile
+        console.log('Waste pile after move:', this.wastePile.map(card => card.data.key));
+    }
+
+    getTopmostFaceUpCard(pile) {
+        for (let i = pile.length - 1; i >= 0; i--) {
+            if (pile[i].faceUp) {
+                return pile[i];
+            }
+        }
+        return null;
+    }
+
+    findClosestPile(gameObject) {
+        console.log('Dragged card position:', gameObject.x, gameObject.y);
+        let closestPile = null;
+        let closestDistance = Infinity;
+        const threshold = this.cardWidth * 2; // Increased threshold for easier dropping
+        const checkPile = (pile, isTableau) => {
+            let pileX, pileY;
+            if (pile.length > 0) {
+                if (isTableau) {
+                    // For tableau piles, use the position of the last card
+                    pileX = pile[pile.length - 1].x;
+                    pileY = pile[pile.length - 1].y + 30; // Adjust for the next card position
+                } else {
+                    // For foundation piles, use the position of the first card (empty foundation)
+                    pileX = pile[0].x;
+                    pileY = pile[0].y;
+                }
+            } else if (isTableau) {
+                // For empty tableau piles, calculate position based on index
+                const index = this.tableauPiles.indexOf(pile);
+                pileX = 20 + index * (this.cardWidth + 20);
+                pileY = 200; // Starting Y position for tableau piles
+            } else {
+                // For empty foundation piles
+                pileX = pile[0].x;
+                pileY = pile[0].y;
+            }
+            const distanceX = Math.abs(gameObject.x - pileX);
+            const distanceY = Math.abs(gameObject.y - pileY);
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+            console.log('Checking pile:', isTableau ? 'Tableau' : 'Foundation', 'at', pileX, pileY, 'Distance:', distance);
+            if (distance < closestDistance && distance < threshold) {
+                closestDistance = distance;
+                closestPile = pile;
+            }
+        };
+        // Check tableau piles
+        this.tableauPiles.forEach(pile => checkPile(pile, true));
+        // Check foundation piles
+        this.foundationPiles.forEach(pile => checkPile(pile, false));
+        console.log('Closest pile:', closestPile ? (this.tableauPiles.includes(closestPile) ? 'Tableau' : 'Foundation') : 'None');
+        return closestPile;
+    }
+
+    findCardPile(card) {
+        for (let pile of this.tableauPiles) {
+            if (pile.includes(card)) {
+                return pile;
+            }
+        }
+        return null;
+    }
+
+    flipCard(card) {
+        if (!card.faceUp) {
+            card.faceUp = true;
+            card.setTexture(card.data.key);
+            this.setupCardInteractivity(card);
+            console.log(`Flipped card ${card.data.key}`);
+            this.updateAutoCompleteButtonVisibility();
+        }
+    }
+
+    checkValidMove(movingCard, targetCard) {
+        if (!targetCard.faceUp) return false;
+        const movingValue = parseInt(movingCard.data.value);
+        const targetValue = parseInt(targetCard.data.value);
+        const movingSuit = movingCard.data.suit;
+        const targetSuit = targetCard.data.suit;
+        const redSuits = ['heart', 'diamond'];
+        const blackSuits = ['spade', 'club'];
+        return (movingValue === targetValue - 1) &&
+            ((redSuits.includes(movingSuit) && blackSuits.includes(targetSuit)) ||
+                (blackSuits.includes(movingSuit) && redSuits.includes(targetSuit)));
+    }
+
+    moveCardStack(gameObject, targetPile) {
+        if (!gameObject || !gameObject.cardStack || !targetPile) {
+            console.log('Invalid gameObject or targetPile');
+            return;
+        }
+        const pileIndex = this.tableauPiles.indexOf(targetPile);
+        const emptyTableau = this.children.list.find(child =>
+            child.type === 'Image' &&
+            child.texture.key === 'empty_tableau' &&
+            child.tableauIndex === pileIndex
+        );
+        const baseX = emptyTableau ? emptyTableau.x : 10 + pileIndex * (this.cardWidth + 10);
+        const baseY = emptyTableau ? emptyTableau.y : this.cardHeight + 20;
+
+        gameObject.cardStack.forEach((card, index) => {
+            if (card && card.data) {
+                let cardY = baseY + index * (this.cardHeight * this.cardSpacing);
+                // Adjust position for stacks larger than maxStackSize
+                if (targetPile.length + gameObject.cardStack.length > this.maxStackSize) {
+                    const overflow = targetPile.length + gameObject.cardStack.length - this.maxStackSize;
+                    cardY -= overflow * (this.cardHeight * this.cardSpacing) * ((targetPile.length + index) / (targetPile.length + gameObject.cardStack.length));
+                }
+                card.x = baseX;
+                card.y = cardY;
+                card.setDepth(targetPile.length + index + 1); // Ensure proper stacking order, above the empty tableau
+                targetPile.push(card);
+                this.setupCardInteractivity(card);
+            } else {
+                console.log('Invalid card in stack');
+            }
+        });
+        // Update the positions of all cards in the target pile
+        this.updatePilePositions(targetPile);
+        // Update visibility of empty tableau placeholders
+        this.updateEmptyTableauVisibility();
+        this.updateAutoCompleteButtonVisibility();
+    }
+
+    updateEmptyTableauVisibility() {
+        this.tableauPiles.forEach((pile, index) => {
+            const emptyTableau = this.children.list.find(child =>
+                child.type === 'Image' &&
+                child.texture.key === 'empty_tableau' &&
+                child.tableauIndex === index
+            );
+            if (emptyTableau) {
+                emptyTableau.setDepth(0); // Always keep it at the bottom
+            }
+        });
+    }
+
+    returnCardStack(gameObject) {
+        const baseX = gameObject.input.dragStartX;
+        const baseY = gameObject.input.dragStartY;
+        gameObject.cardStack.forEach((card, index) => {
+            card.x = baseX;
+            card.y = baseY;
+            if (this.foundationPiles.includes(gameObject.sourcePile)) {
+                // If the card is from a foundation pile, don't stack it
+                card.y = baseY;
+            } else {
+                card.y = baseY + index * (this.cardHeight * this.cardSpacing);
+            }
+        });
+    }
+
+    drawCard() {
+        if (this.deck.length > 0) {
+            const card = this.deck.pop();
+            if (!card || !card.key) {
+                console.log('Invalid card drawn from deck');
+                return;
+            }
+            const cardSprite = this.add.image(this.wastePilePosition.x, this.wastePilePosition.y, card.key);
+            cardSprite.setOrigin(0, 0);
+            cardSprite.setDisplaySize(this.cardWidth, this.cardHeight);
+            cardSprite.setInteractive();
+            this.input.setDraggable(cardSprite);
+            cardSprite.data = card;
+            cardSprite.faceUp = true;
+            cardSprite.setDepth(900 + this.wastePile.length); // Set a high depth for waste pile cards
+            this.wastePile.push(cardSprite);
+        } else if (this.wastePile.length > 0) {
+            // Reset the stock when it's empty
+            this.deck = this.wastePile.map(cardSprite => cardSprite.data).reverse();
+            this.wastePile.forEach(cardSprite => {
+                cardSprite.removeInteractive();
+                this.children.remove(cardSprite);
+            });
+            this.wastePile = [];
+            this.stockPile.setAlpha(1); // Make the stock pile visible again
+            console.log(`Reset stock with ${this.deck.length} cards`);
+        } else {
+            console.log('No more cards to draw');
+        }
+        // Update the visibility of the stock pile
+        this.stockPile.setAlpha(this.deck.length > 0 ? 1 : 0.5);
+    }
+
+    checkValidFoundationMove(card, foundationPile) {
+        if (card.cardStack && card.cardStack.length > 1) {
+            return false; // Only single cards can be moved to foundation piles
+        }
+
+        if (foundationPile.length === 1) { // Empty foundation pile
+            return card.data.value === '1' && card.data.suit === foundationPile[0].suit;
+        } else {
+            const topCard = foundationPile[foundationPile.length - 1];
+            return card.data.suit === foundationPile[0].suit &&
+                parseInt(card.data.value) === parseInt(topCard.data.value) + 1;
+        }
+    }
+
+    moveCardToFoundation(card, foundationPile) {
+        const x = foundationPile[0].x;
+        const y = foundationPile[0].y;
+        card.x = x;
+        card.y = y;
+        card.setDepth(foundationPile.length + 1); // Set depth based on position in foundation pile
+        foundationPile.push(card);
+        this.updateFoundationPileLayout(foundationPile);
+        this.checkWinCondition(); // Check for win after moving a card to foundation
+        this.updateAutoCompleteButtonVisibility();
+    }
+
+    findFoundationPile(card) {
+        for (let pile of this.foundationPiles) {
+            if (pile.includes(card)) {
+                return pile;
+            }
+        }
+        return null;
+    }
+    setupCardInteractivity(cardSprite) {
+        cardSprite.setInteractive({
+            draggable: true,
+            useHandCursor: true
+        });
+        cardSprite.on('pointerup', this.handleCardClick, this);
+        console.log(`Card ${cardSprite.data.key} set up for interactivity`);
+    }
+    updatePilePositions(pile) {
+        const baseX = pile[0].x;
+        let baseY = pile[0].y;
+        pile.forEach((card, index) => {
+            card.x = baseX;
+            card.y = baseY + index * (this.cardHeight * this.cardSpacing);
+            card.setDepth(index);
+        });
+    }
+
+
+    resize(gameSize, baseSize, displaySize, resolution) {
+        let width = gameSize.width;
+        const height = gameSize.height;
+        // Ensure width doesn't exceed height
+        if (width > height) {
+            width = height;
+        }
+        this.cameras.resize(width, height);
+        // Recalculate card dimensions based on new game size
+        this.cardWidth = Math.floor(width / 10);
+        this.cardHeight = Math.floor(this.cardWidth * 1.5);
+        // Recalculate positions for all game elements
+        this.updateGameLayout();
+        // Center the game horizontally if needed
+        if (gameSize.width > width) {
+            const xOffset = (gameSize.width - width) / 2;
+            this.cameras.main.setViewport(xOffset, 0, width, height);
+        } else {
+            this.cameras.main.setViewport(0, 0, width, height);
+        }
+    }
+
+    updateGameLayout() {
+        const gameWidth = this.cameras.main.width;
+        const gameHeight = this.cameras.main.height;
+        const topMargin = 10;
+        const sideMargin = 10;
+        // Update positions of foundation piles
+        const foundationSpacing = this.cardWidth + 5;
+        this.foundationPiles.forEach((pile, index) => {
+            const x = sideMargin + index * foundationSpacing;
+            const y = topMargin;
+            // Update empty foundation image
+            const emptyFoundation = pile[0];
+            emptyFoundation.setPosition(x, y);
+            emptyFoundation.setDisplaySize(this.cardWidth, this.cardHeight);
+            emptyFoundation.setDepth(1); // Set depth to 1 for foundation bases
+            // Update cards in the foundation pile
+            this.updateFoundationPileLayout(pile);
+        });
+        // Set a high depth for the stock pile to keep it on top
+        this.stockPile.setDepth(1000);
+
+        // Update positions of tableau piles
+        const tableauSpacing = this.cardWidth + 5;
+        const tableauTopMargin = this.cardHeight + 30;
+        this.tableauPiles.forEach((pile, index) => {
+            const x = sideMargin + index * tableauSpacing;
+            const y = tableauTopMargin;
+            // Find or create empty tableau placeholder
+            let emptyTableau = this.children.list.find(child =>
+                child.type === 'Image' &&
+                child.texture.key === 'empty_tableau' &&
+                child.tableauIndex === index
+            );
+            if (!emptyTableau) {
+                emptyTableau = this.add.image(x, y, 'empty_tableau');
+                emptyTableau.setOrigin(0, 0);
+                emptyTableau.tableauIndex = index;
+                emptyTableau.setDepth(0);
+            }
+            emptyTableau.setPosition(x, y);
+            emptyTableau.setDisplaySize(this.cardWidth, this.cardHeight);
+            // Update card positions
+            pile.forEach((card, cardIndex) => {
+                let cardY = y + cardIndex * (this.cardHeight * this.cardSpacing);
+                // Adjust position for stacks larger than maxStackSize
+                if (pile.length > this.maxStackSize) {
+                    const overflow = pile.length - this.maxStackSize;
+                    cardY -= overflow * (this.cardHeight * this.cardSpacing) * (cardIndex / pile.length);
+                }
+                card.setPosition(x, cardY);
+                card.setDisplaySize(this.cardWidth, this.cardHeight);
+                card.setDepth(cardIndex + 1); // Set depth based on card order, above the empty tableau
+            });
+        });
+        // Update stock pile position
+        this.stockPile.setPosition(sideMargin + 4 * foundationSpacing, topMargin);
+        this.stockPile.setDisplaySize(this.cardWidth, this.cardHeight);
+        // Update waste pile position
+        this.wastePilePosition = {
+            x: sideMargin + 5 * foundationSpacing,
+            y: topMargin
+        };
+        this.wastePile.forEach((card, index) => {
+            card.setPosition(this.wastePilePosition.x, this.wastePilePosition.y);
+            card.setDisplaySize(this.cardWidth, this.cardHeight);
+        });
+
+        // Update button positions
+        if (this.newGameButton && this.retryButton) {
+            const buttonWidth = 120;
+            const buttonHeight = 40;
+            const buttonSpacing = 20;
+            const totalWidth = buttonWidth * 2 + buttonSpacing;
+            const startX = gameWidth / 2 - totalWidth / 2;
+            const buttonY = gameHeight - buttonHeight - 10;
+            // New Game button
+            this.newGameButton.setPosition(startX, buttonY);
+            this.newGameButton.setSize(buttonWidth, buttonHeight);
+            this.newGameButtonText.setPosition(startX + buttonWidth / 2, buttonY + buttonHeight / 2);
+            // Retry button
+            this.retryButton.setPosition(startX + buttonWidth + buttonSpacing, buttonY);
+            this.retryButton.setSize(buttonWidth, buttonHeight);
+            this.retryButtonText.setPosition(startX + buttonWidth + buttonSpacing + buttonWidth / 2, buttonY + buttonHeight / 2);
+        }
+
+        // Update auto-complete button position
+        if (this.autoCompleteButton && this.autoCompleteText) {
+            const buttonWidth = 160;
+            const buttonHeight = 40;
+            const buttonX = gameWidth - buttonWidth - 10;
+            const buttonY = gameHeight - buttonHeight - 10;
+            this.autoCompleteButton.setPosition(buttonX, buttonY);
+            this.autoCompleteButton.setSize(buttonWidth, buttonHeight);
+            this.autoCompleteText.setPosition(buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+        }
+    }
+
+    createNewGameButton() {
+        const buttonWidth = 120;
+        const buttonHeight = 40;
+        const buttonSpacing = 20;
+        const totalWidth = buttonWidth * 2 + buttonSpacing;
+        const startX = this.cameras.main.width / 2 - totalWidth / 2;
+        const buttonY = this.cameras.main.height - buttonHeight - 10;
+        // New Game button
+        const newGameButton = this.add.rectangle(startX, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        newGameButton.setStrokeStyle(2, 0xffffff);
+        newGameButton.setOrigin(0, 0);
+        const newGameText = this.add.text(startX + buttonWidth / 2, buttonY + buttonHeight / 2, 'New Game', {
+            fontFamily: 'Arial',
+            fontSize: '18px',
+            color: '#ffffff'
+        });
+        newGameText.setOrigin(0.5);
+        newGameButton.setInteractive({
+                useHandCursor: true
+            })
+            .on('pointerdown', () => this.startNewGame())
+            .on('pointerover', () => newGameButton.setFillStyle(0x6a6a6a))
+            .on('pointerout', () => newGameButton.setFillStyle(0x4a4a4a));
+        // Retry button
+        const retryButton = this.add.rectangle(startX + buttonWidth + buttonSpacing, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        retryButton.setStrokeStyle(2, 0xffffff);
+        retryButton.setOrigin(0, 0);
+        const retryText = this.add.text(startX + buttonWidth + buttonSpacing + buttonWidth / 2, buttonY + buttonHeight / 2, 'Retry', {
+            fontFamily: 'Arial',
+            fontSize: '18px',
+            color: '#ffffff'
+        });
+        retryText.setOrigin(0.5);
+        retryButton.setInteractive({
+                useHandCursor: true
+            })
+            .on('pointerdown', () => this.retryGame())
+            .on('pointerover', () => retryButton.setFillStyle(0x6a6a6a))
+            .on('pointerout', () => retryButton.setFillStyle(0x4a4a4a));
+        this.newGameButton = newGameButton;
+        this.newGameButtonText = newGameText;
+        this.retryButton = retryButton;
+        this.retryButtonText = retryText;
+    }
+
+    startNewGame() {
+        // Clear the game state
+        this.clearGameState();
+        // Reset the game state
+        this.deck = this.createDeck();
+        this.shuffleDeck(this.deck);
+        // Update the initialDeck for the new game
+        this.initialDeck = [...this.deck];
+        // Set up the new layout
+        this.setupSolitaireLayout();
+        // Update the game layout
+        this.updateGameLayout();
+        // Reset win state and set up interactions
+        this.resetWinState();
+        this.setupGameInteractions();
+    }
+
+    createInitialDeck() {
+        const deck = this.createDeck();
+        this.shuffleDeck(deck);
+        this.initialDeck = [...deck]; // Store the initial deck
+        return deck;
+    }
+
+    retryGame() {
+        // Clear existing piles
+        this.clearGameState();
+        // Reset the deck to the initial configuration
+        this.deck = [...this.initialDeck];
+        // Set up the new layout
+        this.setupSolitaireLayout();
+        // Update the game layout
+        this.updateGameLayout();
+        // Reset win state and set up interactions
+        this.resetWinState();
+        this.setupGameInteractions();
+    }
+
+    resetWinState() {
+        // Remove win message if it exists
+        this.children.list
+            .filter(child => child.type === 'Text' && child.text === 'You Win!')
+            .forEach(winText => this.children.remove(winText));
+
+        // Reset game interactions
+        this.setupGameInteractions();
+    }
+    clearGameState() {
+        // Clear tableau piles
+        this.tableauPiles.forEach(pile => {
+            pile.forEach(card => {
+                card.removeInteractive();
+                this.children.remove(card);
+            });
+        });
+        // Remove empty tableau placeholders
+        this.children.list.filter(child =>
+            child.type === 'Image' &&
+            child.texture.key === 'empty_tableau'
+        ).forEach(emptyTableau => {
+            this.children.remove(emptyTableau);
+        });
+        // Clear foundation piles
+        this.foundationPiles.forEach(pile => {
+            pile.forEach((card, index) => {
+                card.removeInteractive();
+                this.children.remove(card);
+            });
+        });
+        // Clear waste pile
+        this.wastePile.forEach(card => {
+            card.removeInteractive();
+            this.children.remove(card);
+        });
+        // Reset game state
+        this.tableauPiles = [];
+        this.foundationPiles = [];
+        this.wastePile = [];
+        // Reset the stock pile
+        this.stockPile.setAlpha(1);
+    }
+
+    setupGameInteractions() {
+        // Clear existing listeners
+        this.input.off('drag');
+        this.input.off('dragstart');
+        this.input.off('dragend');
+
+        // Set up new listeners
+        this.input.on('drag', this.handleDrag, this);
+        this.input.on('dragstart', this.handleDragStart, this);
+        this.input.on('dragend', this.handleDragEnd, this);
+
+        // Make stock pile interactive
+        this.stockPile.setInteractive();
+        this.stockPile.off('pointerdown');
+        this.stockPile.on('pointerdown', this.drawCard, this);
+
+        // Set up card interactivity for all visible cards
+        this.tableauPiles.forEach(pile => {
+            pile.forEach(card => {
+                if (card.faceUp) {
+                    this.setupCardInteractivity(card);
+                }
+            });
+        });
+
+        this.wastePile.forEach(card => {
+            this.setupCardInteractivity(card);
+        });
+    }
+
+    updateFoundationPileLayout(foundationPile) {
+        foundationPile.forEach((card, index) => {
+            if (index > 0) { // Skip the foundation base
+                card.setDepth(index + 1); // Set depth starting from 2 for cards
+                card.x = foundationPile[0].x;
+                card.y = foundationPile[0].y;
+            }
+        });
+    }
+    checkWinCondition() {
+        // Check if all foundation piles have 13 cards (Ace to King)
+        const allFoundationsFull = this.foundationPiles.every(pile => pile.length === 14); // 13 cards + 1 foundation base
+        if (allFoundationsFull) {
+            this.handleWin();
+        }
+    }
+    handleWin() {
+        // Disable further interactions
+        this.input.off('drag');
+        this.input.off('dragstart');
+        this.input.off('dragend');
+        this.stockPile.removeInteractive();
+        // Display win message
+        const winText = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2, 'You Win!', {
+            fontFamily: 'Arial',
+            fontSize: '64px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6,
+            shadow: {
+                color: '#000000',
+                blur: 5,
+                offsetX: 2,
+                offsetY: 2
+            }
+        });
+        winText.setOrigin(0.5);
+        winText.setDepth(1000); // Ensure it appears on top
+        // Add a glow effect
+        this.tweens.add({
+            targets: winText,
+            alpha: 0.6,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            duration: 1000
+        });
+    }
+
+    checkAllTableauCardsFaceUp() {
+        return this.tableauPiles.every(pile => pile.every(card => card.faceUp));
+    }
+
+    createAutoCompleteButton() {
+        const buttonWidth = 160;
+        const buttonHeight = 40;
+        const buttonX = this.cameras.main.width - buttonWidth - 10;
+        const buttonY = this.cameras.main.height - buttonHeight - 10;
+
+        this.autoCompleteButton = this.add.rectangle(buttonX, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        this.autoCompleteButton.setStrokeStyle(2, 0xffffff);
+        this.autoCompleteButton.setOrigin(0, 0);
+        this.autoCompleteButton.setVisible(false);
+
+        this.autoCompleteText = this.add.text(buttonX + buttonWidth / 2, buttonY + buttonHeight / 2, 'Auto Complete', {
+            fontFamily: 'Arial',
+            fontSize: '18px',
+            color: '#ffffff'
+        });
+        this.autoCompleteText.setOrigin(0.5);
+        this.autoCompleteText.setVisible(false);
+
+        this.autoCompleteButton.setInteractive({
+                useHandCursor: true
+            })
+            .on('pointerdown', () => this.performAutoComplete())
+            .on('pointerover', () => this.autoCompleteButton.setFillStyle(0x6a6a6a))
+            .on('pointerout', () => this.autoCompleteButton.setFillStyle(0x4a4a4a));
+    }
+
+    performAutoComplete() {
+        let cardMoved;
+        do {
+            cardMoved = false;
+            for (let tableauPile of this.tableauPiles) {
+                if (tableauPile.length > 0) {
+                    const topCard = tableauPile[tableauPile.length - 1];
+                    for (let foundationPile of this.foundationPiles) {
+                        if (this.checkValidFoundationMove(topCard, foundationPile)) {
+                            this.moveCardToFoundation(topCard, foundationPile);
+                            tableauPile.pop();
+                            cardMoved = true;
+                            break;
+                        }
+                    }
+                    if (cardMoved) break;
+                }
+            }
+        } while (cardMoved);
+
+        this.checkWinCondition();
+        this.updateAutoCompleteButtonVisibility();
+    }
+
+    updateAutoCompleteButtonVisibility() {
+        const allFaceUp = this.checkAllTableauCardsFaceUp();
+        this.autoCompleteButton.setVisible(allFaceUp);
+        this.autoCompleteText.setVisible(allFaceUp);
+    }
+}
+class LogoScene extends Phaser.Scene {
+    constructor() {
+        super({
+            key: 'LogoScene'
+        });
+    }
+    preload() {
+        this.load.image('logo', 'https://rosebud.ai/assets/logo adiussoft.jpg?zMFV');
+    }
+    create() {
+        // Create and position the logo image
+        const title = this.add.image(this.scale.width * 0.5, this.scale.height * 0.5, 'logo');
+
+        // Scale the logo appropriately
+        title.setDisplaySize(this.scale.width * 0.25, this.scale.height * 0.25);
+        title.setOrigin(0.5);
+        // Add a bounce animation with scaled movement
+        this.tweens.add({
+            targets: title,
+            y: 280,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Bounce.easeInOut'
+        });
+        // Switch to the game scene after 4 seconds
+        this.time.delayedCall(5000, () => {
+            this.scene.start('GameScene');
+        });
+    }
+}
+const container = document.getElementById('renderDiv');
+const config = {
+    type: Phaser.AUTO,
+    parent: container,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
+    backgroundColor: 0x87CEEB, // Light blue background for cartoon theme
+    width: 800,
+    height: 600,
+    scene: [LogoScene, Solitaire]
+};
+window.phaserGame = new Phaser.Game(config);
+</script>
+  </body>
+</html>
